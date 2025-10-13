@@ -8,12 +8,12 @@ export function HeroSection() {
       {/* Left Column - Hero Content */}
       <div className="space-y-8">
         <div className="space-y-4">
-          <h1 className="text-balance font-sans text-5xl font-bold leading-tight text-white md:text-6xl lg:text-7xl">
+          <h1 className="heading-1">
             Instantly Fill Forms with{" "}
             <span className="text-primary">Dummy Data</span>
           </h1>
 
-          <p className="text-pretty text-lg leading-relaxed text-white/80 md:text-xl">
+          <p className="after-heading-1">
             Testing a website or demoing a form? Auto Filler Extension lets you
             fill any form with realistic dummy data — in just one click.
           </p>

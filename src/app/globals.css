@@ -127,3 +127,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* === Global Typography Utilities === */
+@layer components {
+  .heading-1 {
+    @apply text-balance font-sans text-5xl font-bold leading-tight text-white md:text-6xl lg:text-7xl;
+  }
+
+  .heading-2 {
+    @apply text-3xl sm:text-4xl font-bold text-white;
+  }
+
+  .after-heading-1 {
+    @apply text-pretty text-lg leading-relaxed text-white/80 md:text-xl;
+  }
+
+  .body-text {
+    @apply text-base sm:text-lg text-slate-300 leading-relaxed;
+  }
+
+  .small-text {
+    @apply text-sm sm:text-base text-slate-400;
+  }
+}
+
