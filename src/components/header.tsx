@@ -1,15 +1,15 @@
+"use client"
 
-
-"use client";
-
-import { useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Menu, X } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { createClient } from "@/utils/supabase/client"
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [user, setUser] = useState<any>(null)
   const pathname = usePathname()
 
   const navItems = [
@@ -18,6 +18,31 @@ export function Header() {
     { name: "Extension", href: "/extension" },
     { name: "About", href: "/about" },
   ]
+
+  // 👇 Check user login status
+  useEffect(() => {
+    const supabase = createClient()
+
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+    })
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null)
+    })
+
+    return () => {
+      listener.subscription.unsubscribe()
+    }
+  }, [])
+
+  // 👇 Logout handler
+  async function handleLogout() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setUser(null)
+    window.location.href = "/" // Redirect to landing page
+  }
 
   return (
     <header className="border-b border-white/10 bg-gradient-from/50 backdrop-blur-sm">
@@ -45,34 +70,46 @@ export function Header() {
               {name}
             </Link>
           ))}
-        
-        
         </nav>
 
         {/* Right Side Buttons */}
         <div className="flex items-center gap-3">
-          {/* Theme Button */}
-          
-
-          {/* Sign In + Sign Up Buttons (hidden on sm) */}
           <div className="hidden sm:flex items-center gap-2">
-  <Link href="/sign-in">
-    <Button
-      variant="ghost"
-      className="text-white/90 hover:bg-white/10 hover:text-white"
-    >
-      Sign In
-    </Button>
-  </Link>
+            {user ? (
+              <>
+                <Link href="/account">
+                  <Button className="bg-primary font-medium text-primary-foreground hover:bg-primary/90">
+                    Account
+                  </Button>
+                </Link>
+                <Button
+                  onClick={handleLogout}
+                  variant="ghost"
+                  className="text-white/90 hover:bg-white/10 hover:text-white"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/sign-in">
+                  <Button
+                    variant="ghost"
+                    className="text-white/90 hover:bg-white/10 hover:text-white"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/sign-up">
+                  <Button className="bg-primary font-medium text-primary-foreground hover:bg-primary/90">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
 
-  <Link href="/sign-up">
-    <Button className="bg-primary font-medium text-primary-foreground hover:bg-primary/90">
-      Sign Up
-    </Button>
-  </Link>
-</div>
-
-          {/* Hamburger Menu (visible only on sm and below) */}
+          {/* Hamburger Menu */}
           <button
             className="md:hidden text-white hover:text-primary transition"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -83,38 +120,53 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu (only visible when open) */}
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden border-t border-white/10 bg-black/60 backdrop-blur-md">
           <nav className="flex flex-col items-start gap-4 px-6 py-4 text-white text-sm">
-            <Link href="/" onClick={() => setIsMenuOpen(false)}>
-              Home
-            </Link>
-            <Link href="/pricing" onClick={() => setIsMenuOpen(false)}>
-              Pricing
-            </Link>
-            <Link href="/extension" onClick={() => setIsMenuOpen(false)}>
-              Extension
-            </Link>
-            <Link href="/about" onClick={() => setIsMenuOpen(false)}>
-              About
-            </Link>
+            {navItems.map(({ name, href }) => (
+              <Link key={name} href={href} onClick={() => setIsMenuOpen(false)}>
+                {name}
+              </Link>
+            ))}
 
-            {/* Move Sign In + Sign Up here for mobile */}
             <div className="flex flex-col gap-2 w-full pt-2">
-              <Button
-                variant="ghost"
-                className="w-full text-white/90 hover:bg-white/10 hover:text-white"
-              >
-                Sign In
-              </Button>
-              <Button className="w-full bg-primary font-medium text-primary-foreground hover:bg-primary/90">
-                Sign Up
-              </Button>
+              {user ? (
+                <>
+                  <Link href="/account" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full bg-primary font-medium text-primary-foreground hover:bg-primary/90">
+                      Account
+                    </Button>
+                  </Link>
+                  <Button
+                    onClick={handleLogout}
+                    variant="ghost"
+                    className="w-full text-white/90 hover:bg-white/10 hover:text-white"
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/sign-in" onClick={() => setIsMenuOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      className="w-full text-white/90 hover:bg-white/10 hover:text-white"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/sign-up" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full bg-primary font-medium text-primary-foreground hover:bg-primary/90">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>
       )}
     </header>
-  );
+  )
 }
