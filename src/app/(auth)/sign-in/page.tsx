@@ -9,13 +9,17 @@ import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import LoadingSpinner from "@/components/ui/loading-spinner"
 >>>>>>> auth-testing
+=======
+>>>>>>> 9a004baf39ea60ee0766e563a37870170b62d520
 import { signIn } from "./signin"
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
   const [loading, setLoading] = useState(false)
@@ -39,6 +43,8 @@ export default function SignInPage() {
     }
   }
 >>>>>>> auth-testing
+=======
+>>>>>>> 9a004baf39ea60ee0766e563a37870170b62d520
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0b2e] via-[#2d1b4e] to-[#4a2c6f] justify-center">
@@ -47,7 +53,6 @@ export default function SignInPage() {
       <div className="fixed w-full z-50">
         <Header />
       </div>
-
       <div className="flex justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-8 mt-20">
@@ -57,10 +62,14 @@ export default function SignInPage() {
 
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
 <<<<<<< HEAD
+<<<<<<< HEAD
             <form action={signIn} className="space-y-6">
 =======
             <form onSubmit={handleSubmit} className="space-y-6">
 >>>>>>> auth-testing
+=======
+            <form action={signIn} className="space-y-6">
+>>>>>>> 9a004baf39ea60ee0766e563a37870170b62d520
               <div>
                 <label className="block text-white font-medium mb-2">Email Address</label>
                 <div className="relative">
@@ -68,10 +77,14 @@ export default function SignInPage() {
                   <Input
                     type="email"
 <<<<<<< HEAD
+<<<<<<< HEAD
                     name="email"               // ✅ Add name attribute
 =======
                     name="email"
 >>>>>>> auth-testing
+=======
+                    name="email"               // ✅ Add name attribute
+>>>>>>> 9a004baf39ea60ee0766e563a37870170b62d520
                     placeholder="Enter your email"
                     className="pl-12 bg-white/5 border-white/10 text-white placeholder:text-purple-300 h-12 rounded-xl"
                     required
@@ -86,10 +99,14 @@ export default function SignInPage() {
                   <Input
                     type={showPassword ? "text" : "password"}
 <<<<<<< HEAD
+<<<<<<< HEAD
                     name="password"           // ✅ Add name attribute
 =======
                     name="password"
 >>>>>>> auth-testing
+=======
+                    name="password"           // ✅ Add name attribute
+>>>>>>> 9a004baf39ea60ee0766e563a37870170b62d520
                     placeholder="Enter your password"
                     className="pl-12 pr-12 bg-white/5 border-white/10 text-white placeholder:text-purple-300 h-12 rounded-xl"
                     required
@@ -105,10 +122,13 @@ export default function SignInPage() {
               </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
               {error && <p className="text-red-400 text-center">{error}</p>}
 
 >>>>>>> auth-testing
+=======
+>>>>>>> 9a004baf39ea60ee0766e563a37870170b62d520
               <div className="flex items-center justify-between">
                 <Link href="/forgot-password" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
                   Forgot password?

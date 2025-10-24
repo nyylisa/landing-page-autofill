@@ -6,12 +6,10 @@ export async function createClient() {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-<<<<<<< HEAD
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-=======
+
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
->>>>>>> auth-testing
-    {
+  
+    { 
       cookies: {
         getAll() {
           return cookieStore.getAll()

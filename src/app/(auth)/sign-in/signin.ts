@@ -2,6 +2,9 @@
 
 import { createClient } from "@/utils/supabase/server"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9a004baf39ea60ee0766e563a37870170b62d520
 import { redirect } from "next/navigation"
 
 export async function signIn(formData: FormData) {
@@ -27,6 +30,7 @@ export async function signIn(formData: FormData) {
 
   // Successful login → redirect to homepage
   redirect("/homepage")
+<<<<<<< HEAD
 =======
 
 export async function signIn(formData: FormData) {
@@ -42,4 +46,6 @@ export async function signIn(formData: FormData) {
 
   return { success: true }
 >>>>>>> auth-testing
+=======
+>>>>>>> 9a004baf39ea60ee0766e563a37870170b62d520
 }
