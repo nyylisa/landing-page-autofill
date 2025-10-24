@@ -8,31 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import LoadingSpinner from "@/components/ui/loading-spinner"
 import { signIn } from "./signin"
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
-
-    const formData = new FormData(e.currentTarget)
-    const result = await signIn(formData)
-
-    setLoading(false)
-
-    if (result.success) {
-      router.push("/homepage")
-    } else {
-      setError(result.message || "An unexpected error occurred.")
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0b2e] via-[#2d1b4e] to-[#4a2c6f] justify-center">
@@ -41,7 +20,6 @@ export default function SignInPage() {
       <div className="fixed w-full z-50">
         <Header />
       </div>
-
       <div className="flex justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-8 mt-20">
@@ -50,14 +28,14 @@ export default function SignInPage() {
           </div>
 
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form action={signIn} className="space-y-6">
               <div>
                 <label className="block text-white font-medium mb-2">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-300" />
                   <Input
                     type="email"
-                    name="email"
+                    name="email"               // ✅ Add name attribute
                     placeholder="Enter your email"
                     className="pl-12 bg-white/5 border-white/10 text-white placeholder:text-purple-300 h-12 rounded-xl"
                     required
@@ -71,7 +49,7 @@ export default function SignInPage() {
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-300" />
                   <Input
                     type={showPassword ? "text" : "password"}
-                    name="password"
+                    name="password"           // ✅ Add name attribute
                     placeholder="Enter your password"
                     className="pl-12 pr-12 bg-white/5 border-white/10 text-white placeholder:text-purple-300 h-12 rounded-xl"
                     required
@@ -85,8 +63,6 @@ export default function SignInPage() {
                   </button>
                 </div>
               </div>
-
-              {error && <p className="text-red-400 text-center">{error}</p>}
 
               <div className="flex items-center justify-between">
                 <Link href="/forgot-password" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">

@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/utils/supabase/server"
+import { redirect } from "next/navigation"
 
 export async function signUp(formData: FormData) {
   const email = formData.get("email") as string
@@ -10,8 +11,7 @@ export async function signUp(formData: FormData) {
 
   const supabase = await createClient()
 
-  // 🧠 Step 1: Try signing up
-  const { data, error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -22,14 +22,11 @@ export async function signUp(formData: FormData) {
     },
   })
 
-  // 🧩 Step 2: Detect existing email
-  if (data?.user && data.user.identities && data.user.identities.length === 0) {
-    return { success: false, message: "This email is already registered. Please sign in instead." }
-  }
-
   if (error) {
-    return { success: false, message: error.message }
+    console.error(error.message)
+    return
   }
 
-  return { success: true }
+  // Optionally redirect after successful signup
+  redirect("/private")
 }

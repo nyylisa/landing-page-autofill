@@ -1,17 +1,29 @@
 "use server"
 
 import { createClient } from "@/utils/supabase/server"
+import { redirect } from "next/navigation"
 
 export async function signIn(formData: FormData) {
-  const email = formData.get("email") as string
-  const password = formData.get("password") as string
+  const email = formData.get("email") as string | null
+  const password = formData.get("password") as string | null
 
-  const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-  if (error) {
-    return { success: false, message: error.message }
+  if (!email || !password) {
+    // Handle empty fields
+    redirect("/error?message=Missing email or password")
   }
 
-  return { success: true }
+  const supabase = await createClient()
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  if (error) {
+    // Redirect to error page with message
+    redirect(`/error?message=${encodeURIComponent(error.message)}`)
+  }
+
+  // Successful login → redirect to homepage
+  redirect("/homepage")
 }
