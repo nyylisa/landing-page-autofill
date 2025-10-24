@@ -7,16 +7,35 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-// import { Checkbox } from "@/components/ui/checkbox"
 import { signUp } from "./signup";
 import { createClient } from "@/utils/supabase/client"
+import { useRouter } from "next/navigation"
+import LoadingSpinner from "@/components/ui/loading-spinner"
 
 export default function SignUpPage() {  
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [agreeToTerms, setAgreeToTerms] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      setError(null)
+      setLoading(true)
   
+      const formData = new FormData(e.currentTarget)
+      const result = await signUp(formData)
+  
+      setLoading(false)
+  
+      if (result.success) {
+        alert("Sign-up successful! Please check your email to verify your account.")
+        router.push("/private")
+      } else {
+        alert(result.message)
+      }
+    }
 
 const handleGoogleSignUp = async () => {
   const supabase = createClient();
@@ -33,6 +52,8 @@ const handleGoogleSignUp = async () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0b2e] via-[#2d1b4e] to-[#4a2c6f] justify-center">
+      {loading && <LoadingSpinner text="Creating account..." />}
+      
       <div className="fixed w-full z-50">
         <Header />
       </div>
@@ -46,7 +67,7 @@ const handleGoogleSignUp = async () => {
         </div>
 
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
-          <form action={signUp} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-white font-medium mb-2">First Name</label>
