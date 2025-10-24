@@ -14,7 +14,40 @@ import { createClient } from "@/utils/supabase/client"
 export default function SignUpPage() {  
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [agreeToTerms, setAgreeToTerms] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      setError(null)
+      setLoading(true)
+  
+      const formData = new FormData(e.currentTarget)
+      const result = await signUp(formData)
+  
+      setLoading(false)
+  
+      if (result.success) {
+        alert("Sign-up successful! Please check your email to verify your account.")
+        router.push("/private")
+      } else {
+        alert(result.message)
+      }
+    }
+
+const handleGoogleSignUp = async () => {
+  const supabase = createClient();
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/homepage`,
+    },
+  });
+};
+
+
+  
 
   
 
@@ -33,6 +66,8 @@ const handleGoogleSignUp = async () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0b2e] via-[#2d1b4e] to-[#4a2c6f] justify-center">
+      {loading && <LoadingSpinner text="Creating account..." />}
+      
       <div className="fixed w-full z-50">
         <Header />
       </div>
