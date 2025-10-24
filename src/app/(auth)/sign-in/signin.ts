@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/utils/supabase/server"
+<<<<<<< HEAD
 import { redirect } from "next/navigation"
 
 export async function signIn(formData: FormData) {
@@ -26,4 +27,19 @@ export async function signIn(formData: FormData) {
 
   // Successful login → redirect to homepage
   redirect("/homepage")
+=======
+
+export async function signIn(formData: FormData) {
+  const email = formData.get("email") as string
+  const password = formData.get("password") as string
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (error) {
+    return { success: false, message: error.message }
+  }
+
+  return { success: true }
+>>>>>>> auth-testing
 }

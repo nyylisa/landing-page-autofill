@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Check, Zap, Crown, Rocket, Moon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-// import { Switch } from "@/components/ui/switch"
+import { useState } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Check, Zap, Crown, Rocket } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 export default function PricingPage() {
-  const [isYearly, setIsYearly] = useState(false)
+  const [isYearly, setIsYearly] = useState(false);
 
   const plans = [
     {
@@ -23,8 +23,6 @@ export default function PricingPage() {
         "Basic form detection",
         "Profile management",
         "Chrome extension",
-        "Email support",
-        "Basic analytics",
       ],
     },
     {
@@ -39,12 +37,6 @@ export default function PricingPage() {
         "Advanced AI form detection",
         "Unlimited profiles",
         "Custom field mapping",
-        "Team collaboration (5 seats)",
-        "Priority support",
-        "Advanced analytics",
-        "CSV import/export",
-        "API access",
-        "Custom shortcuts",
       ],
     },
     {
@@ -58,25 +50,24 @@ export default function PricingPage() {
         "Unlimited team seats",
         "SSO integration",
         "Advanced security features",
-        "Dedicated account manager",
-        "24/7 phone support",
-        "Custom integrations",
-        "White-label options",
-        "Advanced compliance",
-        "Training & onboarding",
       ],
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1a3e] via-[#2d1b4e] to-[#4a2c5e]">
-      {/* Navigation */}
+      {/* Header */}
       <div className="fixed w-full z-50">
         <Header />
       </div>
 
-      {/* Hero Section */}
-      <div className="mx-auto max-w-7xl px-6 py-16 text-center">
+      {/* Hero Section with Motion */}
+      <motion.div
+        className="mx-auto max-w-7xl px-6 py-16 text-center"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+      >
         <h1 className="mb-4 text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
           Choose{" "}
           <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
@@ -88,81 +79,106 @@ export default function PricingPage() {
           <br />
           All plans include a 30-day free trial.
         </p>
+      </motion.div>
 
-        {/* Billing Toggle */}
-        <div className="mb-12 flex items-center justify-center gap-3">
-          <span className={`text-sm ${!isYearly ? "font-semibold text-white" : "text-gray-400"}`}>Monthly</span>
-          {/* <Switch checked={isYearly} onCheckedChange={setIsYearly} /> */}
-          <span className={`text-sm ${isYearly ? "font-semibold text-white" : "text-gray-400"}`}>Yearly</span>
-        </div>
+      {/* Pricing Cards with Staggered Motion */}
+      <motion.div
+        className="grid gap-6 md:grid-cols-3 mx-auto max-w-7xl px-6"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: {},
+          show: {
+            transition: {
+              staggerChildren: 0.2,
+            },
+          },
+        }}
+      >
+        {plans.map((plan) => {
+          const Icon = plan.icon;
+          const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
 
-        {/* Pricing Cards */}
-        <div className="grid gap-6 md:grid-cols-3">
-          {plans.map((plan) => {
-            const Icon = plan.icon
-            const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice
-
-            return (
-              <div
-                key={plan.name}
-                className={`relative rounded-2xl border p-8 ${
-                  plan.popular
-                    ? "border-cyan-400/50 bg-gradient-to-b from-[#2d3b6e] to-[#3d2b5e]"
-                    : "border-white/10 bg-white/5"
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 px-4 py-1 text-xs font-semibold text-white">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-
-                <div className="mb-6 flex justify-center">
-                  <div
-                    className={`flex h-16 w-16 items-center justify-center rounded-2xl ${
-                      plan.popular ? "bg-gradient-to-br from-cyan-400 to-purple-500" : "bg-white/10"
-                    }`}
-                  >
-                    <Icon className={`h-8 w-8 ${plan.popular ? "text-white" : "text-cyan-400"}`} />
-                  </div>
+          return (
+            <motion.div
+              key={plan.name}
+              variants={{
+                hidden: { opacity: 0, y: 40 },
+                show: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              whileHover={{ scale: 1.03 }}
+              className={`relative rounded-2xl border p-8 transition-all ${
+                plan.popular
+                  ? "border-cyan-400/50 bg-gradient-to-b from-[#2d3b6e] to-[#3d2b5e] shadow-lg shadow-cyan-500/10"
+                  : "border-white/10 bg-white/5 hover:bg-white/10"
+              }`}
+            >
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 px-4 py-1 text-xs font-semibold text-white">
+                    Most Popular
+                  </span>
                 </div>
+              )}
 
-                <h3 className="mb-2 text-2xl font-bold text-white">{plan.name}</h3>
-                <p className="mb-6 text-sm text-gray-400">{plan.description}</p>
-
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-white">${price}</span>
-                  <span className="text-gray-400">/{isYearly ? "year" : "month"}</span>
-                </div>
-
-                <ul className="mb-8 space-y-3 text-left">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-cyan-400" />
-                      <span className="text-sm text-gray-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  className={`w-full ${
+              <div className="mb-6 flex justify-center">
+                <div
+                  className={`flex h-16 w-16 items-center justify-center rounded-2xl ${
                     plan.popular
-                      ? "bg-gradient-to-r from-cyan-400 to-purple-500 text-white hover:from-cyan-500 hover:to-purple-600"
-                      : "bg-white/10 text-white hover:bg-white/20"
+                      ? "bg-gradient-to-br from-cyan-400 to-purple-500"
+                      : "bg-white/10"
                   }`}
                 >
-                  Start Free Trial
-                </Button>
+                  <Icon
+                    className={`h-8 w-8 ${
+                      plan.popular ? "text-white" : "text-cyan-400"
+                    }`}
+                  />
+                </div>
               </div>
-            )
-          })}
-        </div>
-      </div>
-      <div>
+
+              <h3 className="mb-2 text-2xl font-bold text-white">{plan.name}</h3>
+              <p className="mb-6 text-sm text-gray-400">{plan.description}</p>
+
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-white">${price}</span>
+                <span className="text-gray-400">
+                  /{isYearly ? "year" : "month"}
+                </span>
+              </div>
+
+              <ul className="mb-8 space-y-3 text-left">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3">
+                    <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-cyan-400" />
+                    <span className="text-sm text-gray-300">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                className={`w-full ${
+                  plan.popular
+                    ? "bg-gradient-to-r from-cyan-400 to-purple-500 text-white hover:from-cyan-500 hover:to-purple-600"
+                    : "bg-white/10 text-white hover:bg-white/20"
+                }`}
+              >
+                Start Free Trial
+              </Button>
+            </motion.div>
+          );
+        })}
+      </motion.div>
+
+      <motion.div
+        className="mt-16"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
         <Footer />
-      </div>
+      </motion.div>
     </div>
-  )
+  );
 }
