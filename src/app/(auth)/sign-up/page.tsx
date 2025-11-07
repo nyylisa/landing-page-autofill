@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-// import { Checkbox } from "@/components/ui/checkbox"
+
 import { signUp } from "./signup";
 import { createClient } from "@/utils/supabase/client"
+import { useRouter } from "next/navigation"
+import LoadingSpinner from "@/components/ui/loading-spinner"
+
 
 export default function SignUpPage() {  
   const [showPassword, setShowPassword] = useState(false)
@@ -36,15 +39,15 @@ export default function SignUpPage() {
       }
     }
 
-const handleGoogleSignUp = async () => {
-  const supabase = createClient();
-  await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${window.location.origin}/homepage`,
-    },
-  });
-};
+// const handleGoogleSignUp = async () => {
+//   const supabase = createClient();
+//   await supabase.auth.signInWithOAuth({
+//     provider: 'google',
+//     options: {
+//       redirectTo: `${window.location.origin}/homepage`,
+//     },
+//   });
+// };
 
 
   
@@ -81,7 +84,9 @@ const handleGoogleSignUp = async () => {
         </div>
 
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
-          <form action={signUp} className="space-y-6">
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-white font-medium mb-2">First Name</label>

@@ -11,7 +11,8 @@ export async function signUp(formData: FormData) {
 
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signUp({
+  // Try signing up
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -22,11 +23,17 @@ export async function signUp(formData: FormData) {
     },
   })
 
-  if (error) {
-    console.error(error.message)
-    return
+  // Detect if email is already used
+  if (data?.user && data.user.identities && data.user.identities.length === 0) {
+    return { success: false, message: "This email is already registered. Please sign in instead." }
   }
 
-  // Optionally redirect after successful signup
+  if (error) {
+    return { success: false, message: error.message }
+  }
+
+  // Optional: redirect after successful signup
   redirect("/private")
+
+  return { success: true }
 }
