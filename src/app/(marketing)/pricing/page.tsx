@@ -68,13 +68,13 @@ export default function PricingPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
       >
-        <h1 className="mb-4 text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+        <h1 className="mt-10 mb-2 text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
           Choose{" "}
           <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
             Your Perfect Plan
           </span>
         </h1>
-        <p className="mb-8 text-lg text-gray-300">
+        <p className="text-lg text-gray-300">
           Start your journey with AutoFiller and experience the future of form filling.
           <br />
           All plans include a 30-day free trial.
