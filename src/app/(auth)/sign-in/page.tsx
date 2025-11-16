@@ -10,12 +10,15 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import LoadingSpinner from "@/components/ui/loading-spinner"
 import { signIn } from "./signin"
+import { useUser } from "@/app/context/UserContext"
+import { createClient } from "@/utils/supabase/client"
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const { setUser } = useUser()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -28,6 +31,9 @@ export default function SignInPage() {
     setLoading(false)
 
     if (result.success) {
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()  // fetch current user
+      setUser(data.user)  // <-- update context immediately
       router.push("/homepage")
     } else {
       setError(result.message || "An unexpected error occurred.")

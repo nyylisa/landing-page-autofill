@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Zap, Crown, Rocket } from "lucide-react";
+import { X, Check, Zap, Crown, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -19,9 +18,9 @@ export default function PricingPage() {
       monthlyPrice: 0,
       yearlyPrice: 90,
       features: [
-        "Can generate dummy data",
-        "Cannot save generated info",
-        "Limited to 20 uses",
+        { text: "Can generate dummy data", allowed: true },
+        { text: "Limited to 20 uses", allowed: true },
+        { text: "Cannot save generated info", allowed: false }, // ❌ cross
       ],
     },
     {
@@ -32,11 +31,11 @@ export default function PricingPage() {
       yearlyPrice: 290,
       popular: true,
       features: [
-        "Can generate dummy data",
-        "Can save generated info",
-        "Unlimited usage",
+        { text: "Can generate dummy data", allowed: true },
+        { text: "Unlimited usage", allowed: true },
+        { text: "Can save generated info", allowed: true },
       ],
-    }
+    },
   ];
 
   return (
@@ -62,83 +61,89 @@ export default function PricingPage() {
         <p className="text-lg text-gray-300">
           Start your journey with AutoFiller and experience the future of form filling.
           <br />
-          All plans include a 30-day free trial.
+          Flexible plans designed to fit your needs.
         </p>
       </motion.div>
 
       {/* Pricing Cards with Staggered Motion */}
       {/* Pricing Cards with Staggered Motion */}
-<motion.div
-  className="grid gap-6 md:grid-cols-2 justify-center mx-auto max-w-4xl px-6"
-  initial="hidden"
-  animate="show"
-  variants={{
-    hidden: {},
-    show: {
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  }}
->
-  {plans.map((plan) => {
-    const Icon = plan.icon;
-    const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
-
-    return (
       <motion.div
-        key={plan.name}
+        className="grid gap-6 md:grid-cols-2 justify-center mx-auto max-w-4xl px-6"
+        initial="hidden"
+        animate="show"
         variants={{
-          hidden: { opacity: 0, y: 40 },
-          show: { opacity: 1, y: 0 },
+          hidden: {},
+          show: {
+            transition: {
+              staggerChildren: 0.2,
+            },
+          },
         }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        whileHover={{ scale: 1.03 }}
-        className={`relative rounded-2xl border p-8 transition-all ${
-          plan.popular
-            ? "border-cyan-400/50 bg-gradient-to-b from-[#2d3b6e] to-[#3d2b5e] shadow-lg shadow-cyan-500/10"
-            : "border-white/10 bg-white/5 hover:bg-white/10"
-        }`}
       >
-        {plan.popular && (
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-            <span className="rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 px-4 py-1 text-xs font-semibold text-white">
-              Most Popular
-            </span>
-          </div>
-        )}
+        {plans.map((plan) => {
+          const Icon = plan.icon;
+          const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
 
-        <h3 className="mb-2 text-2xl font-bold text-white">{plan.name}</h3>
-        <p className="mb-6 text-sm text-gray-400">{plan.description}</p>
+          return (
+            <motion.div
+              key={plan.name}
+              variants={{
+                hidden: { opacity: 0, y: 40 },
+                show: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              whileHover={{ scale: 1.03 }}
+              className={`relative rounded-2xl border p-8 transition-all ${plan.popular
+                ? "border-cyan-400/50 bg-gradient-to-b from-[#2d3b6e] to-[#3d2b5e] shadow-lg shadow-cyan-500/10"
+                : "border-white/10 bg-white/5 hover:bg-white/10"
+                }`}
+            >
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 px-4 py-1 text-xs font-semibold text-white">
+                    Most Popular
+                  </span>
+                </div>
+              )}
 
-        <div className="mb-6">
-          <span className="text-5xl font-bold text-white">${price}</span>
-          <span className="text-gray-400">/{isYearly ? "year" : "month"}</span>
-        </div>
+              <h3 className="mb-2 text-2xl font-bold text-white">{plan.name}</h3>
+              <p className="mb-6 text-sm text-gray-400">{plan.description}</p>
 
-        <ul className="mb-8 space-y-3 text-left">
-          {plan.features.map((feature) => (
-            <li key={feature} className="flex items-start gap-3">
-              <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-cyan-400" />
-              <span className="text-sm text-gray-300">{feature}</span>
-            </li>
-          ))}
-        </ul>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-white">${price}</span>
+                <span className="text-gray-400">/{isYearly ? "year" : "month"}</span>
+              </div>
 
-        <Button
-          className={`w-full ${
-            plan.popular
-              ? "bg-gradient-to-r from-cyan-400 to-purple-500 text-white hover:from-cyan-500 hover:to-purple-600"
-              : "bg-white/10 text-white hover:bg-white/20"
-          }`}
-        >
-          Start
-        </Button>
+              <ul className="mb-8 space-y-3 text-left">
+                {plan.features.map((feature) => (
+                  <li key={feature.text} className="flex items-start gap-3">
+                    {feature.allowed ? (
+                      <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-cyan-400" />
+                    ) : (
+                      <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
+                    )}
+                    <span className="text-sm text-gray-300">{feature.text}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                className={`w-full ${plan.popular
+                  ? "bg-gradient-to-r from-cyan-400 to-purple-500 text-white hover:from-cyan-500 hover:to-purple-600"
+                  : "bg-white/10 text-white hover:bg-white/20"
+                  }`}
+              >
+                Start
+              </Button>
+            </motion.div>
+          );
+        })}
       </motion.div>
-    );
-  })}
-</motion.div>
+      <div className="pb-4">
+        <Footer />
+      </div>
 
     </div>
+
   );
 }
