@@ -229,7 +229,7 @@ export function Header() {
             {!loading && (user ? (
               <>
                 <Link href="/account">
-                  <Button className="bg-primary font-medium text-primary-foreground hover:bg-primary/90">
+                  <Button className="bg-primary font-medium hover:bg-primary/90 text-white">
                     Account
                   </Button>
                 </Link>
