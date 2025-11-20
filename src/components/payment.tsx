@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { Header } from '@/components/header'
-import { Footer } from '@/components/footer'
+
 
 function PaymentForm() {
   const router = useRouter()
