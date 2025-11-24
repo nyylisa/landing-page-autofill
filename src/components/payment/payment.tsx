@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight, ChevronLeft} from 'lucide-react'
+import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -9,7 +9,7 @@ import Link from 'next/link'
 function PaymentForm() {
   const router = useRouter()
   const [formData, setFormData] = useState({
-    email: 'example@example.com',
+    email: 'lisagishe236@gmail.com',
     cardNumber: '1234 1234 1234 1234',
     expiry: 'MM / YY',
     cvc: '',
@@ -53,29 +53,27 @@ function PaymentForm() {
         {/* Pay with Link Button */}
         <Link href="/checkout">
           <button
-            className="w-full bg-gray-300 hover:bg-gray-400 text-black font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
-          >
-            {/* Icon before text */}
-            <img
-              src="/khqr.png" // your image path
-              alt="KHQR Logo"
-              width={32}  // 32px = w-8
-              height={32}
-              className="w-8 h-8 object-cover rounded-sm"
-            />
+          type="button"
+          className="w-full bg-gray-300 hover:bg-gray-400 text-black font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+        >
+          {/* Icon before text */}
+          <img
+            src="/khqr.png" // your image path
+            alt="ABA Logo"
+            className="w-8 h-8 object-cover rounded-sm"
+          />
 
-            {/* Button text */}
-            KHQR
+          {/* Button text */}
+          KHQR
 
-            {/* Right arrow */}
-            <ChevronRight className="w-5 h-5" />
+          {/* Right arrow */}
+          <ChevronRight className="w-5 h-5" />
 
-            {/* Optional description */}
-            <span className="text-sm font-normal">scan to pay for any banking app</span>
-          </button>
-
+          {/* Optional description */}
+          <span className="text-sm font-normal">scan to pay for any banking app</span>
+        </button>
         </Link>
-
+        
 
 
         {/* Divider */}
