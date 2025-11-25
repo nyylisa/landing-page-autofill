@@ -302,17 +302,17 @@ export default function PricingPage() {
 
               {/* Start Button */}
               {showButton && (
-                <Link href="/payment">
-                  <Button
-                    className={`w-full ${
-                      plan.popular
-                        ? "bg-gradient-to-r from-cyan-400 to-purple-500 text-white hover:from-cyan-500 hover:to-purple-600"
-                        : "bg-white/10 text-white hover:bg-white/20"
-                    }`}
-                  >
-                    Start
-                  </Button>
-                </Link>
+                <Link href={user ? "/payment" : "/sign-up"}>
+  <Button
+    className={`w-full ${
+      plan.popular
+        ? "bg-gradient-to-r from-cyan-400 to-purple-500 text-white hover:from-cyan-500 hover:to-purple-600"
+        : "bg-white/10 text-white hover:bg-white/20"
+    }`}
+  >
+    Start
+  </Button>
+</Link>
               )}
             </motion.div>
           );

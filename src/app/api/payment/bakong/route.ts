@@ -85,8 +85,8 @@ export async function POST(req: Request) {
 
     // Merchant / identity. For dev, use a placeholder.
     // Later replace with process.env.MERCHANT_ID
-    const myBakongId = process.env.MERCHANT_ID || "dev_merchant@bank";
-    const myName = process.env.MERCHANT_NAME || "DEV SHOP";
+    const myBakongId = process.env.MERCHANT_ID || "lisa@aclb";
+    const myName = process.env.MERCHANT_NAME || "Lisa Ny";
     const myCity = process.env.MERCHANT_CITY || "Phnom Penh";
 
     const optionalData = {
