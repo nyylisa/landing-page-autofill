@@ -4,9 +4,17 @@ import { useState } from 'react'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useUser } from "@/app/context/UserContext"; // adjust path if needed
+import { startPayWayPayment } from "@/lib/payment/payway";
+
 
 
 function PaymentForm() {
+  const { user, loading } = useUser();
+  const userId = user?.id; // will be undefined if not logged in
+  const [amount, setAmount] = useState<number>(1000); // example default
+
+
   const router = useRouter()
   const [formData, setFormData] = useState({
     email: 'lisagishe236@gmail.com',
@@ -51,33 +59,41 @@ function PaymentForm() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Pay with Link Button */}
-        <Link href="/checkout">
-          <button
-          type="button"
-          className="w-full bg-gray-300 hover:bg-gray-400 text-black font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
-        >
-          {/* Icon before text */}
-          <img
-            src="/khqr.png" // your image path
-            alt="ABA Logo"
-            className="w-8 h-8 object-cover rounded-sm"
-          />
-
-          {/* Button text */}
-          KHQR
-
-          {/* Right arrow */}
-          <ChevronRight className="w-5 h-5" />
-
-          {/* Optional description */}
-          <span className="text-sm font-normal">scan to pay for any banking app</span>
-        </button>
-        </Link>
         
 
 
+        <Link href={`/checkout?method=payway&amount=${amount}`}>
+  <button
+    className="w-full px-4 py-3 flex items-center gap-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all"
+  >
+    {/* Logo badges */}
+    <div className="flex-shrink-0 flex flex-col">
+      <div className="bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-t-2xl">
+        ABA
+      </div>
+      <div className="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-b-2xl">
+        KHQR
+      </div>
+    </div>
+
+    {/* Text */}
+    <div className="flex flex-col justify-center flex-1 leading-tight text-left">
+      <h3 className="text-foreground font-semibold text-sm">ABA KHQR</h3>
+      <p className="text-muted-foreground text-xs">
+        Scan to pay with any banking app
+      </p>
+    </div>
+
+    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+  </button>
+</Link>
+
+
+
+
+
         {/* Divider */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 mt-5">
           <div className="flex-1 h-px bg-border" />
           <span className="text-muted-foreground text-sm">OR</span>
           <div className="flex-1 h-px bg-border" />

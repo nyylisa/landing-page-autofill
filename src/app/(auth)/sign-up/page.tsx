@@ -39,20 +39,6 @@ export default function SignUpPage() {
       }
     }
 
-// const handleGoogleSignUp = async () => {
-//   const supabase = createClient();
-//   await supabase.auth.signInWithOAuth({
-//     provider: 'google',
-//     options: {
-//       redirectTo: `${window.location.origin}/homepage`,
-//     },
-//   });
-// };
-
-
-  
-
-  
 
 const handleGoogleSignUp = async () => {
   const supabase = createClient();
@@ -167,12 +153,6 @@ const handleGoogleSignUp = async () => {
             </div>
 
             <div className="flex items-start gap-2">
-              {/* <Checkbox
-                id="terms"
-                checked={agreeToTerms}
-                onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
-                className="mt-1 border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
-              /> */}
               <label htmlFor="terms" className="text-sm text-purple-200 cursor-pointer">
                 I agree to the{" "}
                 <Link href="/terms" className="text-cyan-400 hover:text-cyan-300">

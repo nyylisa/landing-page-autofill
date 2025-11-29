@@ -1,201 +1,154 @@
-// // app/(payment)/checkout/page.tsx
-// 'use client';
-
-// import { useEffect, useState } from 'react';
-// import { useSearchParams } from 'next/navigation';
-// import { QRCodeSVG } from 'qrcode.react'; 
-
-// export default function CheckoutPage() {
-//   // You can pass params via URL like /checkout?amount=5
-//   const searchParams = useSearchParams();
-//   const amount = parseFloat(searchParams.get('amount') || '5.00');
-  
-//   const [qrString, setQrString] = useState<string | null>(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     // Automatically generate QR when page loads
-//     async function fetchQR() {
-//       try {
-//         const res = await fetch('/api/payment/bakong', {
-//           method: 'POST',
-//           body: JSON.stringify({ amount }),
-//         });
-//         const data = await res.json();
-//         setQrString(data.qr_string);
-//       } catch (error) {
-//         console.error(error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-//     fetchQR();
-//   }, [amount]);
-
-//   return (
-//     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-//       <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full">
-//         <h1 className="text-2xl font-bold mb-6">Scan to Pay</h1>
-        
-//         {loading ? (
-//           <div className="h-64 flex items-center justify-center">
-//             <p className="animate-pulse text-gray-500">Generating QR...</p>
-//           </div>
-//         ) : qrString ? (
-//           <div className="flex justify-center mb-6">
-//              <div className="border-4 border-red-600 p-2 rounded-lg">
-//                <QRCodeSVG value={qrString} size={256} />
-//              </div>
-//           </div>
-//         ) : (
-//           <p className="text-red-500">Failed to load QR Code</p>
-//         )}
-
-//         <p className="text-lg font-bold mt-4">Total: ${amount.toFixed(2)}</p>
-//         <button className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg">
-//           I Have Paid
-//         </button>
-//       </div>
-      
-//     </div>
-//   );
-// }
-
-// src/app/payment/checkout/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "@/app/context/UserContext";
 
 export default function CheckoutPage() {
-  const [amount, setAmount] = useState<number>(1000); // default amount
-  const [qrString, setQrString] = useState<string | null>(null);
-  const [md5, setMd5] = useState<string | null>(null);
-  const [expiresAt, setExpiresAt] = useState<number | null>(null);
-  const [remaining, setRemaining] = useState<number>(0);
+  const { user } = useUser();
+  const userId = user?.id;
+
+  const params = useSearchParams();
+  const amountParam = params.get("amount");
+  const amount = Number(amountParam) || 1.49;
+
   const [loading, setLoading] = useState(false);
+  const [qrImage, setQrImage] = useState<string | null>(null);
+  const [tranId, setTranId] = useState<string | null>(null);
+
   const router = useRouter();
 
-  async function createQR() {
+  // Generate PayWay QR
+  async function createPaywayQR() {
+    if (!userId) return;
     setLoading(true);
     try {
-      const res = await fetch("/api/payment/bakong", {
+      const res = await fetch("/api/payment/payway/generate-qr", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ amount, user_id: userId }),
       });
-      const data = await res.json();
-      if (data.error) {
-        alert("Error: " + data.error);
+
+      const resData = await res.json();
+      if (resData.error) {
+        alert("PayWay Error: " + resData.error);
         return;
       }
-      setQrString(data.qr_string);
-      setMd5(data.md5);
-      setExpiresAt(data.expiresAt);
+
+      const imageString = resData.qr_image || resData.qrImage;
+
+      if (!imageString) {
+        console.error("Missing QR image in response:", resData);
+        alert("Received response but no QR image found.");
+        return;
+      }
+
+      setQrImage(imageString);
+      setTranId(resData.tran_id);
     } catch (err) {
       console.error(err);
-      alert("Failed to generate QR");
+      alert("Failed to generate PayWay QR");
     } finally {
       setLoading(false);
     }
   }
 
+  const hasCalledAPI = useRef(false);
   useEffect(() => {
-    createQR();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (hasCalledAPI.current) return;
+    hasCalledAPI.current = true;
+    createPaywayQR();
   }, []);
 
-  // countdown
-  useEffect(() => {
-    if (!expiresAt) return;
-    const id = setInterval(() => {
-      const msLeft = Math.max(0, (expiresAt || 0) - Date.now());
-      setRemaining(msLeft);
-      if (msLeft <= 0) clearInterval(id);
-    }, 500);
-    return () => clearInterval(id);
-  }, [expiresAt]);
 
-  // poll status and navigate on success
   useEffect(() => {
-    if (!md5) return;
-    let mounted = true;
-    const check = async () => {
+    // Wait until we actually have a User ID
+    if (!userId) return; 
+
+    // If we already called it, stop.
+    if (hasCalledAPI.current) return;
+
+    hasCalledAPI.current = true;
+    createPaywayQR();
+
+    // Add userId to dependencies so it runs when user loads
+  }, [userId]);
+  // Poll PayWay Status
+  useEffect(() => {
+    if (!tranId) return;
+
+    const checkPaywayStatus = async () => {
       try {
-        const res = await fetch(`/api/payment/mock-status?md5=${encodeURIComponent(md5)}`);
-        if (!res.ok) return;
-        const d = await res.json();
-        if (!mounted) return;
-        if (d.status === "SUCCESS") {
-          router.push(`/payment/success?orderId=${encodeURIComponent(d.orderId || "")}`);
-        } else if (d.status === "EXPIRED") {
-          // optional: auto-refresh the QR
-          // createQR();
+        const res = await fetch(`/api/payment/status?tran_id=${tranId}`);
+        if (res.ok) {
+          const d = await res.json();
+          if (d.status === "PAID" || d.status === "SUCCESS") {
+            router.push(`/success?tranId=${tranId}`);
+          }
         }
       } catch (e) {
-        console.error("poll error", e);
+        console.error("PayWay poll error", e);
       }
     };
-    const id = setInterval(check, 2000);
-    check();
-    return () => {
-      mounted = false;
-      clearInterval(id);
-    };
-  }, [md5, router]);
 
-  async function simulatePay() {
-    if (!md5) return;
-    const res = await fetch("/api/payment/mock-status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ md5 }),
-    });
-    const d = await res.json();
-    if (d.status === "SUCCESS") {
-      // frontend will redirect by poll
-    } else {
-      alert("Failed to mark as paid (maybe expired).");
+    const id = setInterval(checkPaywayStatus, 3000);
+    return () => clearInterval(id);
+  }, [tranId, router]);
+
+  // Simulate PayWay Success
+  async function simulatePayWaySuccess() {
+    if (!tranId) {
+      alert("No transaction ID available. Please wait for QR.");
+      return;
     }
-  }
 
-  function formatMs(ms: number) {
-    const s = Math.floor(ms / 1000);
-    const mm = Math.floor(s / 60);
-    const ss = s % 60;
-    return `${mm}:${String(ss).padStart(2, "0")}`;
+    try {
+      const res = await fetch("/api/payment/payway/simulate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tran_id: tranId, amount }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        alert("✅ Payment Simulated! Wait for automatic redirect...");
+      } else {
+        alert("Simulation failed: " + (data.error || JSON.stringify(data)));
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error simulating payment");
+    }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
         <h2 className="text-2xl font-bold mb-4">Scan to pay</h2>
-
-        <p className="mb-2">Amount: <strong>{amount} KHR</strong></p>
+        <p className="mb-2">Amount: <strong>{amount} USD</strong></p>
 
         {loading ? (
           <div className="h-64 flex items-center justify-center">Generating...</div>
-        ) : qrString ? (
+        ) : qrImage ? (
           <>
-            <div className="flex justify-center mb-4">
-              <div className="border-4 border-gray-200 p-2 rounded-lg">
-                <QRCodeSVG value={qrString} size={280} />
-              </div>
+            <div className="flex flex-col items-center justify-center mb-4">
+              <img
+                src={qrImage}
+                alt="PayWay QR"
+                className="w-64 max-w-xs h-auto p-2 rounded-lg border shadow-sm"
+              />
+              <p className="text-sm text-gray-500 mt-2">Scan with ABA Mobile</p>
             </div>
 
-            
-
-            <p className="mb-2">Expires in: <strong>{formatMs(remaining)}</strong></p>
-
-            <div className="flex gap-2 mt-4">
-              <button onClick={simulatePay} className="flex-1 bg-green-600 text-white py-2 rounded-lg">
-                Simulate Pay (dev)
+            {process.env.NODE_ENV === "development" && (
+              <button
+                onClick={simulatePayWaySuccess}
+                className="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+              >
+                [DEV] Simulate PayWay Success
               </button>
-              <button onClick={() => location.reload()} className="flex-1 border py-2 rounded-lg">
-                Regenerate
-              </button>
-            </div>
+            )}
           </>
         ) : (
           <p className="text-red-500">Failed to create QR</p>
