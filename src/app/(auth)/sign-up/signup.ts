@@ -38,7 +38,7 @@ export async function signUp(formData: FormData) {
     return { success: false, message: "User creation failed." };
   }
 
-  // ✅ Automatically assign Starter plan
+  // Automatically assign Starter plan
   const { error: planError } = await supabase.from("user_plans").insert({
     user_id: userId,
     plan: "Starter",
@@ -49,8 +49,6 @@ export async function signUp(formData: FormData) {
     return { success: false, message: planError.message };
   }
 
-  // Redirect after signup
   redirect("/private");
 
-  return { success: true };
 }

@@ -16,11 +16,9 @@ export async function GET(request: NextRequest) {
     })
 
     if (!error) {
-      // ✅ Redirect user to dashboard (or next)
       return NextResponse.redirect(new URL(next, request.url))
     }
   }
 
-  // ❌ If verification failed, send them to an error page
   return NextResponse.redirect(new URL('/auth/error', request.url))
 }

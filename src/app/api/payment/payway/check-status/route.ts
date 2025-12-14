@@ -25,7 +25,6 @@ export async function GET(req: NextRequest) {
   }
 
   // 3. Check if it is a success
-  // PayWay sends "0" for success, but sometimes you might store it as "SUCCESS" manually
   const isSuccess = data.payway_status === "0" || data.payway_status === "SUCCESS";
 
   return NextResponse.json({ 

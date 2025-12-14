@@ -1,12 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-// FIX: Assuming 'next/navigation' is available if running in a Next.js environment.
 import { useRouter } from "next/navigation" 
 import { Lock, Check, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-// FIX: Assuming the path to your Supabase client utility is correct.
 import { createClient } from "@/utils/supabase/client" 
 
 export default function ResetPasswordPage() {
@@ -14,15 +12,13 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
-  const [isReady, setIsReady] = useState(false) // Ready to display form
+  const [isReady, setIsReady] = useState(false)
   
   const router = useRouter()
   const supabase = createClient()
 
-  // The client automatically processes the URL tokens and signs the user in
-  // temporarily on page load. We just ensure we are in a client environment.
+  
   useEffect(() => {
-    // We assume the user is temporarily authenticated via URL hash on mount
     setIsReady(true)
   }, [])
 
@@ -40,18 +36,15 @@ export default function ResetPasswordPage() {
     setLoading(true)
     setMessage("")
 
-    // Supabase will update the password for the currently signed-in user (the one logged in via the reset token)
     const { error } = await supabase.auth.updateUser({ password: newPassword })
 
     if (error) {
-      // In case of an error, we redirect to login and show the error message.
       console.error("Password Update Error:", error)
       setMessage("An error occurred during password update. Please try the reset link again.")
       setLoading(false)
     } else {
       setMessage("Password successfully updated! Redirecting to login...")
       setLoading(false)
-      // After successful update, immediately redirect to prevent issues
       setTimeout(() => {
         router.push("/sign-in?message=Your password has been successfully reset.")
       }, 2000)

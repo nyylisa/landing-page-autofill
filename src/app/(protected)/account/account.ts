@@ -1,7 +1,5 @@
-// app/account/account.ts
 import { createClient } from "@/utils/supabase/client";
 
-// Fetch user data
 export async function getUser() {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();

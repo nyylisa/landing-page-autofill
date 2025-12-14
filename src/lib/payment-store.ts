@@ -1,5 +1,4 @@
-// src/lib/payment-store.ts
-// Simple in-memory store for dev only. Replace with Supabase/DB for production.
+
 export type PaymentRecord = {
   orderId: string;
   md5: string;

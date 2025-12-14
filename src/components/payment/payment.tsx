@@ -4,15 +4,15 @@ import { useState } from 'react'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useUser } from "@/app/context/UserContext"; // adjust path if needed
+import { useUser } from "@/app/context/UserContext"; 
 import { startPayWayPayment } from "@/lib/payment/payway";
 
 
 
 function PaymentForm() {
   const { user, loading } = useUser();
-  const userId = user?.id; // will be undefined if not logged in
-  const [amount, setAmount] = useState<number>(1000); // example default
+  const userId = user?.id; 
+  const [amount, setAmount] = useState<number>(1000);
 
 
   const router = useRouter()

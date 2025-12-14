@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { createClient } from "@supabase/supabase-js"; // Import directly from SDK
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log("🔔 Webhook Hit. Tran ID:", body.tran_id, "Status:", body.status);
+    console.log("Webhook Hit. Tran ID:", body.tran_id, "Status:", body.status);
 
     const {
       req_time, merchant_id, tran_id, amount, items, payout,
@@ -25,15 +25,13 @@ export async function POST(req: NextRequest) {
       .digest("base64");
 
     if (hash !== generatedHash) {
-      console.error("❌ Hash Mismatch. Expected:", generatedHash, "Got:", hash);
+      console.error("Hash Mismatch. Expected:", generatedHash, "Got:", hash);
       return NextResponse.json({ status: { code: "1", message: "Invalid Hash" } });
     }
 
     // 2. CHECK STATUS
     if (status === "COMPLETED" || status === "APPROVED" || status === "0") {
       
-      // ⚠️ HERE IS THE FIX: Create the ADMIN Client
-      // This bypasses all Row Level Security (RLS) policies
       const supabaseAdmin = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY! 
@@ -49,11 +47,11 @@ export async function POST(req: NextRequest) {
         .eq("payway_tran_id", tran_id);
 
       if (error) {
-        console.error("❌ Supabase Update Failed:", error.message);
+        console.error("Supabase Update Failed:", error.message);
         return NextResponse.json({ status: { code: "1", message: "DB Error" } });
       } 
       
-      console.log("✅ SUCCESS: Database updated to PAID for", tran_id);
+      console.log("SUCCESS: Database updated to PAID for", tran_id);
     }
 
     return NextResponse.json({ status: { code: "0", message: "Success", tran_id } });

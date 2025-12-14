@@ -1,9 +1,11 @@
+
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function StatusPage() {
+// 1. INNER FUNCTION (Your Logic) - Now named "StatusPage"
+function StatusPage() {
   const sp = useSearchParams();
   const md5 = sp.get("md5") || "";
   const [status, setStatus] = useState<string>("PENDING");
@@ -43,5 +45,14 @@ export default function StatusPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// 2. OUTER FUNCTION (The Wrapper) - Named "StatusPageWrapper"
+export default function StatusPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading status...</div>}>
+      <StatusPage />
+    </Suspense>
   );
 }

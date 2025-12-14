@@ -33,7 +33,7 @@ export default function PricingPage() {
         .select("expires_at")
         .eq("user_id", user.id)
         .eq("payway_status", "PAID")
-        .gt("expires_at", new Date().toISOString()) // Expiration > Now
+        .gt("expires_at", new Date().toISOString())
         .order("expires_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -111,9 +111,6 @@ export default function PricingPage() {
         {plans.map((plan) => {
           const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
           const isCurrentPlan = userPlan === plan.name;
-          
-          // Logic: Show button only if user is logged in AND this is not their current plan.
-          // Don't show button for Starter if they are logged in.
           const showButton = !user ? true : (!isCurrentPlan && plan.name !== "Starter");
 
           return (

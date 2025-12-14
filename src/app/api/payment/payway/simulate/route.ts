@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
-  // SAFETY: Only allow this in development mode
   if (process.env.NODE_ENV === 'production') {
      return NextResponse.json({ error: "Simulation not allowed in production" }, { status: 403 });
   }
@@ -14,14 +13,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing tran_id or amount" }, { status: 400 });
     }
 
-    // 1. Mock the Payload exactly like PayWay V2 sends it
-    // Note: These values must match the order used in your Webhook hash check
     const payload = {
       req_time: "20230101000000",
       merchant_id: process.env.PAYWAY_MERCHANT_ID!,
       tran_id: tran_id,
       amount: String(amount),
-      items: "", // Usually empty in webhook unless passed specifically
+      items: "", 
       firstname: "Test",
       lastname: "User",
       email: "test@example.com",
@@ -29,7 +26,7 @@ export async function POST(req: NextRequest) {
       type: "purchase",
       payment_option: "abapay_khqr",
       currency: "KHR",
-      status: "COMPLETED", // The signal for success
+      status: "COMPLETED",
       payout: "", 
     };
 
@@ -51,17 +48,15 @@ export async function POST(req: NextRequest) {
       payload.payout;
 
     const hash = crypto
-      .createHmac("sha512", process.env.PAYWAY_API_KEY!) // Shared Secret
+      .createHmac("sha512", process.env.PAYWAY_API_KEY!)
       .update(strForHash)
       .digest("base64");
 
-    // // 3. Send the Mock Webhook to your own API
-    // const webhookUrl = `${process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000'}/api/payment/payway/webhook`;
-    // NEW (Force Localhost for testing)
+    //3. Send the Mock Webhook to your own API
     const webhookUrl = `http://localhost:3000/api/payment/payway/webhook`;  
     
-    console.log(`🚀 Simulating PayWay Callback to: ${webhookUrl}`);
-    console.log(`📦 Payload:`, { ...payload, hash });
+    console.log(`Simulating PayWay Callback to: ${webhookUrl}`);
+    console.log(`Payload:`, { ...payload, hash });
 
     const response = await fetch(webhookUrl, {
       method: "POST",
@@ -72,7 +67,7 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
     return NextResponse.json({ 
       success: response.ok,
-      debug_url_used: webhookUrl, // <--- ADD THIS LINE 
+      debug_url_used: webhookUrl,
       webhook_response: data 
     });
 

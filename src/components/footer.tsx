@@ -1,7 +1,4 @@
 
-
-import { Github, Twitter, Mail } from "lucide-react";
-
 export function Footer() {
   return (
     <footer className="bg-gradient-to-br from-[#1a1a3e] via-[#2d1b4e] to-[#4a2c5e] text-white">

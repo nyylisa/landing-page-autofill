@@ -1,10 +1,12 @@
+
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
 
-export default function CheckoutPage() {
+// 1. INNER COMPONENT (Contains the Logic)
+function CheckoutContent() {
   const { user } = useUser();
   const userId = user?.id;
 
@@ -17,6 +19,7 @@ export default function CheckoutPage() {
   const [tranId, setTranId] = useState<string | null>(null);
 
   const router = useRouter();
+  const hasCalledAPI = useRef(false);
 
   // Generate PayWay QR
   async function createPaywayQR() {
@@ -53,26 +56,15 @@ export default function CheckoutPage() {
     }
   }
 
-  const hasCalledAPI = useRef(false);
+  // Unified Effect
   useEffect(() => {
-    if (hasCalledAPI.current) return;
-    hasCalledAPI.current = true;
-    createPaywayQR();
-  }, []);
-
-
-  useEffect(() => {
-    // Wait until we actually have a User ID
     if (!userId) return; 
-
-    // If we already called it, stop.
-    if (hasCalledAPI.current) return;
+    if (hasCalledAPI.current) return; 
 
     hasCalledAPI.current = true;
     createPaywayQR();
-
-    // Add userId to dependencies so it runs when user loads
   }, [userId]);
+
   // Poll PayWay Status
   useEffect(() => {
     if (!tranId) return;
@@ -83,7 +75,7 @@ export default function CheckoutPage() {
         if (res.ok) {
           const d = await res.json();
           if (d.status === "PAID" || d.status === "SUCCESS") {
-            router.push(`/success?tranId=${tranId}`);
+            router.push(`/payment/status?tranId=${tranId}`);
           }
         }
       } catch (e) {
@@ -112,7 +104,7 @@ export default function CheckoutPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        alert("✅ Payment Simulated! Wait for automatic redirect...");
+        alert("Payment Simulated! Wait for automatic redirect...");
       } else {
         alert("Simulation failed: " + (data.error || JSON.stringify(data)));
       }
@@ -155,5 +147,14 @@ export default function CheckoutPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// 2. OUTER COMPONENT (The Wrapper)
+export default function CheckoutPageWrapper() {
+  return (
+    <Suspense fallback={<div className="h-screen flex items-center justify-center">Loading Checkout...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }
