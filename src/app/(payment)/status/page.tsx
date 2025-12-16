@@ -26,7 +26,7 @@ function StatusPage() {
       try {
         console.log("Checking status for:", tranId); // Debug Log
 
-        const res = await fetch(`/api/payment/status?tran_id=${tranId}`, {
+        const res = await fetch(`/api/status?tran_id=${tranId}`, {
           cache: "no-store", 
           headers: { "Pragma": "no-cache" }
         });

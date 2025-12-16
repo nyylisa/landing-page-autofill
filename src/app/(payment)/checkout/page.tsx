@@ -239,7 +239,7 @@ function CheckoutContent() {
           // Accept both standard PayWay status and our internal status
           if (d.status === "PAID" || d.status === "SUCCESS" || d.status === "COMPLETED") {
             // ✅ FIX: Redirect to /payment/status (not /status) to avoid 404
-            router.push(`/payment/status?tranId=${tranId}`);
+            router.push(`/status?tranId=${tranId}`);
           }
         }
       } catch (e) {
