@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
 
     if (error) {
       console.error("Password Update Error:", error)
-      setMessage("An error occurred during password update. Please try the reset link again.")
+      setMessage("An error occurred during password update Or New password cannot be the same as the old one. Please try the reset link again.")
       setLoading(false)
     } else {
       setMessage("Password successfully updated! Redirecting to login...")
