@@ -1,57 +1,118 @@
 
+
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
-// 1. INNER FUNCTION (Your Logic) - Now named "StatusPage"
 function StatusPage() {
-  const sp = useSearchParams();
-  const md5 = sp.get("md5") || "";
-  const [status, setStatus] = useState<string>("PENDING");
-  const [info, setInfo] = useState<any>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const tranId = searchParams.get("tranId") || searchParams.get("tran_id") || "";
+  
+  const [status, setStatus] = useState("LOADING");
 
   useEffect(() => {
-    if (!md5) return;
+    if (!tranId) {
+      setStatus("NO_ID");
+      return;
+    }
+
     let mounted = true;
-    const check = async () => {
-      const res = await fetch(`/api/payment/mock-status?md5=${encodeURIComponent(md5)}`);
-      if (!res.ok) {
-        setStatus("NOT_FOUND");
-        return;
+
+    const checkStatus = async () => {
+      try {
+        console.log("Checking status for:", tranId); // Debug Log
+
+        const res = await fetch(`/api/payment/status?tran_id=${tranId}`, {
+          cache: "no-store", 
+          headers: { "Pragma": "no-cache" }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          console.log("API Response:", data);
+          
+          if (!mounted) return;
+
+          // 3. FIX: Accept "PAID", "COMPLETED", or "APPROVED"
+          const s = data.status?.toUpperCase();
+          if (s === "COMPLETED" || s === "PAID" || s === "APPROVED") {
+            setStatus("SUCCESS");
+            
+            // Redirect after 3 seconds
+            setTimeout(() => {
+              router.push("/homepage"); 
+            }, 3000);
+            
+          } else {
+            // Keep waiting...
+            setStatus("PENDING"); 
+          }
+        }
+      } catch (error) {
+        console.error("Status check failed", error);
       }
-      const d = await res.json();
-      if (!mounted) return;
-      setStatus(d.status);
-      setInfo(d);
     };
-    check();
-    const id = setInterval(check, 2000);
+
+    // Run immediately
+    checkStatus();
+
+    // Poll every 3 seconds
+    const intervalId = setInterval(checkStatus, 3000);
+
     return () => {
       mounted = false;
-      clearInterval(id);
+      clearInterval(intervalId);
     };
-  }, [md5]);
+  }, [tranId, router]);
+
+
+
+  if (status === "LOADING" || status === "PENDING") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-6"></div>
+        <h2 className="text-xl font-semibold text-gray-700">Verifying Payment...</h2>
+        <p className="text-gray-500 mt-2">Transaction ID: {tranId}</p>
+        <p className="text-xs text-gray-400 mt-4">Do not close this window.</p>
+      </div>
+    );
+  }
+
+  if (status === "SUCCESS") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-green-50 p-6">
+        <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center border border-green-100">
+          <div className="text-6xl mb-4">🎉</div>
+          <h2 className="text-2xl font-bold text-green-700 mb-2">Payment Successful!</h2>
+          <p className="text-gray-600">Your plan is active.</p>
+          <div className="mt-6 p-3 bg-green-100 text-green-800 rounded text-sm animate-pulse">
+            Redirecting to dashboard...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="bg-white p-8 rounded-xl shadow max-w-lg w-full text-center">
-        <h2 className="text-xl font-bold mb-2">Payment Status</h2>
-        <p className="mb-4">MD5: <code>{md5}</code></p>
-        <p className="text-lg font-semibold">Status: {status}</p>
-
-        {info && (
-          <pre className="text-sm mt-4 text-left bg-gray-50 p-3 rounded">{JSON.stringify(info, null, 2)}</pre>
-        )}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+      <div className="bg-white p-8 rounded-xl shadow max-w-md w-full text-center">
+        <h2 className="text-xl font-bold text-red-500 mb-2">Payment Not Found</h2>
+        <p className="text-gray-600 mb-6">We could not verify transaction: {tranId}</p>
+        <Link href="/private" className="text-blue-600 hover:underline">
+          Go to Dashboard
+        </Link>
       </div>
     </div>
   );
 }
 
-// 2. OUTER FUNCTION (The Wrapper) - Named "StatusPageWrapper"
 export default function StatusPageWrapper() {
   return (
-    <Suspense fallback={<div>Loading status...</div>}>
+    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
       <StatusPage />
     </Suspense>
   );

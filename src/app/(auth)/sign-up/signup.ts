@@ -38,17 +38,7 @@ export async function signUp(formData: FormData) {
     return { success: false, message: "User creation failed." };
   }
 
-  // Automatically assign Starter plan
-  const { error: planError } = await supabase.from("user_plans").insert({
-    user_id: userId,
-    plan: "Starter",
-    active: true,
-  });
-
-  if (planError) {
-    return { success: false, message: planError.message };
-  }
-
-  redirect("/private");
+  // User is now created as Starter plan (no need to insert into user_plans)
+  return { success: true, message: "Sign-up successful! Please check your email to verify your account." };
 
 }

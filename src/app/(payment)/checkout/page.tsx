@@ -75,7 +75,7 @@ function CheckoutContent() {
         if (res.ok) {
           const d = await res.json();
           if (d.status === "PAID" || d.status === "SUCCESS") {
-            router.push(`/payment/status?tranId=${tranId}`);
+            router.push(`/status?tranId=${tranId}`);
           }
         }
       } catch (e) {
@@ -133,14 +133,13 @@ function CheckoutContent() {
               <p className="text-sm text-gray-500 mt-2">Scan with ABA Mobile</p>
             </div>
 
-            {process.env.NODE_ENV === "development" && (
-              <button
-                onClick={simulatePayWaySuccess}
-                className="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-              >
-                [DEV] Simulate PayWay Success
-              </button>
-            )}
+            <button
+              onClick={simulatePayWaySuccess}
+              className="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              Simulate PayWay Success
+            </button>
+          
           </>
         ) : (
           <p className="text-red-500">Failed to create QR</p>
