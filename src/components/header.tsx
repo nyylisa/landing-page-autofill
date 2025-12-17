@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { useUser } from "@/app/context/UserContext"
 import { createClient } from "@/utils/supabase/client"
+import Image from "next/image"
 
 export function Header() {
   const { user, loading } = useUser()
@@ -16,7 +17,7 @@ export function Header() {
   async function handleLogout() {
     const supabase = createClient()
     await supabase.auth.signOut()
-    window.location.href = "/" 
+    window.location.href = "/"
   }
 
   const navItems = [
@@ -31,10 +32,14 @@ export function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <span className="font-bold text-primary-foreground">A</span>
-          </div>
-          <span className="font-semibold text-white">AutoFiller</span>
+          <Image
+            src="/logo.png"
+            alt="FormGenie Logo"
+            width={60}
+            height={60}
+            className="rounded-lg object-contain"
+          />
+          <span className="font-semibold text-white">FormGenie</span>
         </Link>
 
         {/* Desktop nav */}
