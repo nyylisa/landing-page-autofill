@@ -38,6 +38,7 @@ export function Header() {
             width={60}
             height={60}
             className="rounded-lg object-contain"
+            priority
           />
           <span className="font-semibold text-white">FormGenie</span>
         </Link>
